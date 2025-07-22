@@ -1,5 +1,4 @@
 import express from "express";
-import { restrictTo } from "../middlewares/protect.js";
 import {
   createProduct,
   getMyProduct,

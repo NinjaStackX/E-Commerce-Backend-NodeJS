@@ -1,10 +1,21 @@
+import cloudinary from "../config/couldnary.js";
 import { Category, Product } from "../models/index.js";
 import { productValidation } from "../validations/productValidation.js";
-// import { productSchema } from "../models/product.model.js";
 
 export const createProduct = async (req, res) => {
   const parsed = productValidation.safeParse(req.body);
   if (!parsed.success) return res.json({ error: parsed.error.format() });
+  //============================test upload=====================
+  // console.log();
+
+  // cloudinary.uploader
+  //   .upload("../../public/shoes.webp", { folder: "product" })
+  //   .then((result) => {
+  //     console.log("Upload successful:", result.secure_url);
+  //   })
+  //   .catch((error) => {
+  //     console.error("Error uploading:", error);
+  //   });
 
   //====================need Couldary Confing======================
   // const uploadedImages = req.files.map((file) => ({
