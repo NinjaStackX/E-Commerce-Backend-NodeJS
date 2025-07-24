@@ -1,11 +1,11 @@
 import { z } from "zod";
 
 export const productValidation = z.object({
-  title: z.string().min(3),
-  desc: z.string(),
-  category: z.string(),
-  quantity: z.number().min(0),
-  price: z.number().min(0),
-  rating: z.number().min(0).max(5),
-  inStock: z.boolean(),
+  title: z.coerce.string().min(3),
+  desc: z.coerce.string(),
+  category: z.coerce.string(),
+  quantity: z.coerce.number().min(0),
+  price: z.coerce.number().min(0),
+  rating: z.coerce.number().min(0).max(5),
+  inStock: z.coerce.boolean(),
 });

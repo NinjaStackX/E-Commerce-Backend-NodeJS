@@ -1,17 +1,18 @@
 import { User } from "../models/index.js";
 
-export const getUsers = async (req, res) => {
-  const users = await User.find({}, "name role email password ");
-  if (!users || users.length === 0) {
+export const getUser = async (req, res) => {
+  const user = await User.find({ name: req.user.name }).select("-password"); //{}, "name role email password "
+
+  if (!user) {
     return res.status(403).json({
       success: false,
-      message: "Oops,There are any users to show it!",
-      users: [],
+      message: "Oops,The user is not found!",
+      user: null,
     });
   }
   res.status(200).json({
     success: true,
-    message: "Completed get Users successfully!",
-    users,
+    message: "Completed get data user successfully!",
+    user,
   });
 };

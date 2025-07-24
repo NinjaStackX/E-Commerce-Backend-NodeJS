@@ -1,53 +1,51 @@
-import cloudinary from "../config/couldnary.js";
 import { Category, Product } from "../models/index.js";
 import { productValidation } from "../validations/productValidation.js";
-
 export const createProduct = async (req, res) => {
   const parsed = productValidation.safeParse(req.body);
-  if (!parsed.success) return res.json({ error: parsed.error.format() });
-  //============================test upload=====================
-  // console.log();
-
-  // cloudinary.uploader
-  //   .upload("../../public/shoes.webp", { folder: "product" })
-  //   .then((result) => {
-  //     console.log("Upload successful:", result.secure_url);
-  //   })
-  //   .catch((error) => {
-  //     console.error("Error uploading:", error);
-  //   });
-
-  //====================need Couldary Confing======================
-  // const uploadedImages = req.files.map((file) => ({
-  //   url: file.path,
-  //   public_id: file.filename,
-  // }));
-  // const mainImage = {
-  //   url: uploadedImages[0].url,
-  //   public_id: uploadedImages[0].public_id,
-  // };
-  // const images = uploadedImages.slice(1);
-
-  const { title, category } = req.body;
-
-  const checkCate = await Category.findOne({ name: category });
-  if (!checkCate) {
-    await Category.create({ name: category });
+  if (!parsed.success) {
+    return res
+      .status(400)
+      .json({ success: false, errors: parsed.error.format() });
   }
 
-  const categoryId = (await Category.findOne({ name: category }))._id;
-  const newproduct = {
+  // ✅ استخراج الصور من req.files
+  const mainImage = req.files?.mainImage?.[0]
+    ? {
+        url: req.files.mainImage[0].path,
+        public_id: req.files.mainImage[0].filename,
+      }
+    : null;
+
+  const images =
+    req.files?.images?.map((file) => ({
+      url: file.path,
+      public_id: file.filename,
+    })) || [];
+
+  if (!mainImage) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Main image is required" });
+  }
+
+  const { title, category } = req.body;
+  const existingCategory =
+    (await Category.findOne({ name: category })) ||
+    (await Category.create({ name: category }));
+
+  const newProduct = {
     ...parsed.data,
-    category: categoryId,
-    //==============need Coundary Confing=======================
-    // mainImage,
-    // images,
+    category: existingCategory._id,
+    mainImage,
+    images,
   };
 
-  await Product.create(newproduct);
-  res.status(200).json({
+  await Product.create(newProduct);
+
+  res.status(201).json({
     success: true,
-    message: `create product ( ${title} ) Successfully`,
+    message: `✅ Product (${title}) created successfully`,
+    data: newProduct,
   });
 };
 
