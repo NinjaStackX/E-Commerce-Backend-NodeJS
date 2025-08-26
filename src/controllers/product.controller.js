@@ -8,7 +8,6 @@ export const createProduct = async (req, res) => {
       .json({ success: false, errors: parsed.error.format() });
   }
 
-  // ✅ استخراج الصور من req.files
   const mainImage = req.files?.mainImage?.[0]
     ? {
         url: req.files.mainImage[0].path,
@@ -50,17 +49,59 @@ export const createProduct = async (req, res) => {
 };
 
 export const getMyProduct = async (req, res) => {
-  const products = await Product.find();
-  if (!products || products.length === 0) {
-    return res.status(403).json({
-      success: false,
-      message: "Oops,There are any Products to show it!",
-      products: [],
-    });
+  let queryObj = {};
+
+  if (req.query.keyword) {
+    queryObj.$or = [
+      {
+        title: { $regex: req.query.keyword, $option: "i" },
+        description: { $regex: req.query.keyword, $option: "i" },
+      },
+    ];
   }
+
+  if (req.query.category) {
+    queryObj.category = req.query.category;
+  }
+
+  if (req.query.minPrice || req.query.maxPrice) {
+    queryObj.price = {};
+    if (req.query.minPrice) queryObj.price.$gte = Number(req.query.minPrice);
+    if (req.query.minPrice) queryObj.price.$gte = Number(req.query.minPrice);
+  }
+  if (req.query.minRating) {
+    queryObj.rating = {
+      $gte: Number(req.query.minRating),
+    };
+  }
+
+  const query = await Product.find(queryObj);
+
+  if (req.query.sortBy) {
+    const sortField = req.query.sortBy;
+    const sortOrder = req.query.sortB === "desc" ? -1 : 1;
+    query = query.sort({ [sortField]: sortOrder });
+  }
+
+  const page = req.query.page || 1;
+  const limit = req.query.limit || 10;
+  const skip = (page - 1) * limit;
+  //query = query; //.limit(limit).skip(skip);
+
+  const products = await query; //.lean();
+  const total = await Product.countDocuments(queryObj);
+
   res.status(200).json({
     success: true,
     message: "Completed get Products successfully!",
+    total,
+    page,
+    limit,
     products,
   });
 };
+export const updateProduct = async (req, res) => {};
+export const deleteProduct = async (req, res) => {};
+export const rateProduct = async (req, res) => {};
+export const createReview = async (req, res) => {};
+export const removeProductImage = async (req, res) => {};

@@ -3,3 +3,4 @@ export { default as Notification } from "./notification.js";
 export { default as AuditLog } from "./audioLog.model.js";
 export { default as Category } from "./category.model.js";
 export { default as Product } from "./product.model.js";
+export { default as Order } from "./order.model.js";

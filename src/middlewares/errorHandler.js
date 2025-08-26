@@ -1,6 +1,6 @@
 import errorAnalize from "../lib/errorAnalize.js";
 const errorHandler = (err, req, res, next) => {
-  const truncatedStack = err.stack ? err.stack.split("\n")[0] : null;
+  const truncatedStack = err.stack ? err.stack.split("\n") : null;
   console.log("🔥 Error:", truncatedStack || err.message);
 
   res.status(err.status || 500).json({

@@ -128,7 +128,7 @@ const upload = multer({
 export const uploadSignale = upload.single("image");
 export const uploadMultiple = upload.array("images", 5); // هون انا شاكك يا ب s يا بلا
 //=====================================================================
-export const createProduct = async (req, res) => {
+export const createProduct1 = async (req, res) => {
   const parsed = productValidation.safeParse(req.body);
   if (!parsed.success) return res.json({ error: parsed.error.format() });
 
@@ -174,3 +174,11 @@ export const createProduct = async (req, res) => {
     data: newproduct,
   });
 };
+let products;
+if (!products || products.length === 0) {
+  return res.status(403).json({
+    success: false,
+    message: "Oops,There are any Products to show it!",
+    products: [],
+  });
+}
