@@ -5,7 +5,7 @@ import {
   deleteCategory,
   getAllCategory,
 } from "../controllers/category.controller.js";
-import asyncHandler from "../utils/tools/asyncHandler.js";
+import asyncHandler from "../utils/asyncHandler.js";
 
 const router = express.Router();
 

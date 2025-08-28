@@ -1,11 +1,11 @@
-import mongoose from "mongoose";
-const orderSchema = new mongoose.Schema(
+import { Schema, model } from "mongoose";
+const orderSchema = new Schema(
   {
-    user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    user: { type: Schema.Types.ObjectId, ref: "User", required: true },
     products: [
       {
         product: {
-          type: mongoose.Schema.Types.ObjectId,
+          type: Schema.Types.ObjectId,
           ref: "Product",
           required: true,
         },
@@ -14,5 +14,4 @@ const orderSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-const Category = model("Category", CategorySchema);
-export default Category;
+export default model("Order", orderSchema);

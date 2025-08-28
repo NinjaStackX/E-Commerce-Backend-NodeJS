@@ -1,4 +1,5 @@
 import { Category, Product } from "../models/index.js";
+import { queryBuilder } from "../utils/queryBuilder.js";
 import { productValidation } from "../validations/productValidation.js";
 export const createProduct = async (req, res) => {
   const parsed = productValidation.safeParse(req.body);
@@ -47,58 +48,15 @@ export const createProduct = async (req, res) => {
     data: newProduct,
   });
 };
+export const getProducts = async (req, res) => {
+  const { total, page, limit, results } = await queryBuilder(
+    Product,
+    req.query
+  );
 
-export const getMyProduct = async (req, res) => {
-  let queryObj = {};
-
-  if (req.query.keyword) {
-    queryObj.$or = [
-      {
-        title: { $regex: req.query.keyword, $option: "i" },
-        description: { $regex: req.query.keyword, $option: "i" },
-      },
-    ];
-  }
-
-  if (req.query.category) {
-    queryObj.category = req.query.category;
-  }
-
-  if (req.query.minPrice || req.query.maxPrice) {
-    queryObj.price = {};
-    if (req.query.minPrice) queryObj.price.$gte = Number(req.query.minPrice);
-    if (req.query.minPrice) queryObj.price.$gte = Number(req.query.minPrice);
-  }
-  if (req.query.minRating) {
-    queryObj.rating = {
-      $gte: Number(req.query.minRating),
-    };
-  }
-
-  const query = await Product.find(queryObj);
-
-  if (req.query.sortBy) {
-    const sortField = req.query.sortBy;
-    const sortOrder = req.query.sortB === "desc" ? -1 : 1;
-    query = query.sort({ [sortField]: sortOrder });
-  }
-
-  const page = req.query.page || 1;
-  const limit = req.query.limit || 10;
-  const skip = (page - 1) * limit;
-  //query = query; //.limit(limit).skip(skip);
-
-  const products = await query; //.lean();
-  const total = await Product.countDocuments(queryObj);
-
-  res.status(200).json({
-    success: true,
-    message: "Completed get Products successfully!",
-    total,
-    page,
-    limit,
-    products,
-  });
+  res
+    .status(200)
+    .json({ success: true, total, page, limit, products: results });
 };
 export const updateProduct = async (req, res) => {};
 export const deleteProduct = async (req, res) => {};

@@ -1,13 +1,13 @@
-import { mongoose } from "mongoose";
+import { model, Schema } from "mongoose";
 
-const auditLogSchema = new mongoose.Schema(
+const auditLogSchema = new Schema(
   {
     action: String,
-    performedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    performedBy: { type: Schema.Types.ObjectId, ref: "User" },
     target: String,
     meta: Object,
   },
   { timestamps: true }
 );
 
-export default mongoose.model("AuditLog", auditLogSchema);
+export default model("AuditLog", auditLogSchema);
